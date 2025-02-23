@@ -115,18 +115,13 @@ test.describe('E2E Text-to-image user flow', () => {
       const lastImage = imageGenerationPage.generatedImages.last();
       await lastImage.click();
       await imageGenerationPage.nextButton.click(); //step not outlined in requrements
-
+      await imageGenerationPage.downloadButton.waitFor({ state: 'visible' });
 
       /** NOTES
        * Download seems to be triggered by an API call so I will intercept the call before clicking the download button using page.route()
        *  and save the file to disk.
        * I would try to come up with a more generic solution to handle the download process if I had more time.
        */
-
-      const firstImage = imageGenerationPage.generatedImages.nth(0);
-      await firstImage.click();
-      await imageGenerationPage.nextButton.click();
-      await imageGenerationPage.downloadButton.waitFor({ state: 'visible' });
 
       await page.route('**/hacktheicon.scramblerducati.com/feed/*', async (route) => {
         const response = await route.fetch();
@@ -137,7 +132,7 @@ test.describe('E2E Text-to-image user flow', () => {
         await route.continue();
       });
 
-      await imageGenerationPage.downloadButton.click();
+      await imageGenerationPage.downloadButton.click(); //step not outlined in requirements
 
       await page.waitForTimeout(2000);
       await page.unrouteAll({ behavior: 'ignoreErrors' });
